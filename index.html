@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>愛盟陪你通關！2026 過年生存戰 - 情緒力互動卡牌</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #FFF9F2;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            font-size: 18px;
+        }
+
+        /* 核心卡牌動畫 */
+        .card-container { perspective: 1000px; }
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .card-inner.is-flipped { transform: rotateY(180deg); }
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .card-back { transform: rotateY(180deg); }
+        .anime-border {
+            border: 4px solid #333;
+            box-shadow: 8px 8px 0px #333;
+        }
+
+        /* 漂浮裝飾動畫 */
+        @keyframes float-slow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+        .floating-item {
+            animation: float-slow 4s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* 圖示點擊晃動動畫 */
+        @keyframes icon-shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            50% { transform: rotate(-10deg); }
+            75% { transform: rotate(5deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .shake-effect {
+            animation: icon-shake 0.4s ease-in-out;
+        }
+
+        /* --- 祝福小馬 🐎 系統 (固定由右往左) --- */
+        #pony-system {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #pony-group {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            flex-direction: row; 
+            visibility: hidden;
+            left: 0; top: 0;
+        }
+
+        .pony-active {
+            visibility: visible !important;
+            animation-duration: 10s; /* 放慢速跑 */
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes run-r-to-l-mid {
+            0% { transform: translate(110vw, 50vh); }
+            100% { transform: translate(-150vw, 50vh); }
+        }
+        @keyframes run-r-to-l-top {
+            0% { transform: translate(110vw, 15vh); }
+            100% { transform: translate(-150vw, 70vh); }
+        }
+        @keyframes run-r-to-l-bottom {
+            0% { transform: translate(110vw, 85vh); }
+            100% { transform: translate(-150vw, 20vh); }
+        }
+
+        .pony-emoji {
+            font-size: 3.5rem; 
+            animation: gallop-jump 0.3s ease-in-out infinite;
+            filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.1));
+            line-height: 1;
+            z-index: 5;
+        }
+        @media (min-width: 768px) {
+            .pony-emoji { font-size: 5rem; }
+        }
+        
+        @keyframes gallop-jump {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .blessing-flag {
+            background-color: #D22B2B;
+            color: #FFD700;
+            padding: 8px 16px;
+            border: 3px solid #333;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 4px 4px 0px #333;
+            animation: flag-wave 0.5s ease-in-out infinite;
+            margin-left: -5px; 
+            font-size: 0.9rem;
+            border-radius: 4px;
+            z-index: 4;
+        }
+        @media (min-width: 768px) {
+            .blessing-flag { font-size: 1.15rem; padding: 12px 24px; box-shadow: 6px 6px 0px #333; }
+        }
+
+        @keyframes flag-wave {
+            0%, 100% { transform: skewY(0deg); }
+            50% { transform: skewY(-5deg); }
+        }
+
+        .dust-cloud {
+            position: fixed;
+            pointer-events: none;
+            z-index: 99;
+            font-size: 20px;
+            animation: dust-fade 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        @keyframes dust-fade {
+            0% { opacity: 0.8; transform: translate(0, 0) scale(0.5); }
+            100% { opacity: 0; transform: translate(40px, -20px) scale(2.2); }
+        }
+
+        .bg-pattern {
+            background-image: radial-gradient(#FFD700 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4 relative">
+
+    <div class="fixed inset-0 bg-pattern pointer-events-none"></div>
+
+    <!-- 祝福小馬系統 -->
+    <div id="pony-system">
+        <div id="pony-group">
+            <div class="pony-emoji" id="pony-instance">🐎</div>
+            <div class="blessing-flag">
+                愛盟祝您：與愛同行，奔向美好的一年 ✨
+            </div>
+        </div>
+    </div>
+
+    <!-- 背景裝飾 -->
+    <div class="fixed top-[-10px] left-2 md:top-[-20px] md:left-4 swing-item z-20">
+        <svg width="40" height="100" class="md:w-20 md:h-[200px]" viewBox="0 0 80 200">
+            <rect x="38" y="0" width="4" height="40" fill="#8B4513" />
+            <rect x="20" y="40" width="40" height="15" rx="2" fill="#D22B2B" stroke="#333" stroke-width="2" />
+            <rect x="25" y="60" width="40" height="15" rx="2" fill="#D22B2B" stroke="#333" stroke-width="2" />
+            <rect x="20" y="80" width="40" height="15" rx="2" fill="#D22B2B" stroke="#333" stroke-width="2" />
+            <rect x="25" y="100" width="40" height="15" rx="2" fill="#D22B2B" stroke="#333" stroke-width="2" />
+            <circle cx="40" cy="130" r="5" fill="#FFD700" stroke="#333" stroke-width="1" />
+        </svg>
+    </div>
+
+    <div class="fixed top-4 right-4 md:top-10 md:right-10 floating-item rotate-12 z-20">
+        <div class="w-12 h-12 md:w-24 md:h-24 bg-red-600 anime-border flex items-center justify-center text-yellow-400 text-2xl md:text-5xl font-black">福</div>
+    </div>
+
+    <div class="fixed bottom-4 left-4 md:bottom-10 md:left-10 floating-item -rotate-12 z-20">
+        <div class="w-10 h-16 md:w-16 md:h-24 bg-red-500 anime-border rounded-sm relative">
+            <div class="absolute top-2 md:top-4 left-1/2 -translate-x-1/2 w-6 h-6 md:w-8 md:h-8 rounded-full bg-yellow-400 border-2 border-black flex items-center justify-center font-bold text-xs md:text-sm">愛</div>
+        </div>
+    </div>
+
+    <!-- 右下角金元寶 -->
+    <div class="fixed bottom-4 right-4 md:bottom-10 md:right-10" style="width: 80px; height: 60px; md:width: 160px; md:height: 120px; z-index: 20;">
+        <div class="absolute bottom-0 right-0 floating-item" style="z-index: 3;">
+            <svg width="45" height="32" class="md:w-20 md:h-[65px]" viewBox="0 0 80 60">
+                <path d="M10,30 Q10,50 40,50 Q70,50 70,30 Q70,20 40,20 Q10,20 10,30" fill="#FFD700" stroke="#333" stroke-width="3"/>
+                <path d="M25,22 Q25,5 40,5 Q55,5 55,22" fill="#FFD700" stroke="#333" stroke-width="3"/>
+                <path d="M15,30 Q40,35 65,30" fill="none" stroke="#B8860B" stroke-width="1.5"/>
+            </svg>
+        </div>
+        <div class="absolute bottom-2 right-8 md:bottom-4 md:right-16 floating-item" style="z-index: 2; animation-delay: -1.2s;">
+            <svg width="32" height="24" class="md:w-[65px] md:h-12" viewBox="0 0 80 60">
+                <path d="M10,30 Q10,50 40,50 Q70,50 70,30 Q70,20 40,20 Q10,20 10,30" fill="#FFD700" stroke="#333" stroke-width="3"/>
+                <path d="M25,22 Q25,5 40,5 Q55,5 55,22" fill="#FFD700" stroke="#333" stroke-width="3"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- 主要內容區 -->
+    <div class="relative z-10 w-full flex flex-col items-center">
+        <header class="w-full max-w-4xl text-center my-10 px-4">
+            <div class="inline-block bg-orange-500 text-white px-8 py-3 anime-border mb-6 transform -rotate-1">
+                <h1 class="text-2xl md:text-4xl font-black leading-tight">愛盟陪你通關！<br class="md:hidden">2026 過年生存戰</h1>
+            </div>
+            <p class="text-gray-800 font-bold bg-white/80 px-6 py-2 rounded-full inline-block text-lg md:text-xl shadow-sm border border-gray-200">長輩關懷不卡關，學習用「情緒力」開啟高品質對話。</p>
+        </header>
+
+        <nav class="w-full max-w-4xl flex flex-wrap justify-center gap-3 mb-10 px-4">
+            <button onclick="filterCards('all')" class="bg-white px-5 py-2.5 anime-border hover:bg-yellow-200 font-bold text-lg transition-colors">全部題目</button>
+            <button onclick="filterCards('career')" class="bg-white px-5 py-2.5 anime-border hover:bg-blue-200 font-bold text-lg transition-colors">職涯薪資</button>
+            <button onclick="filterCards('relationship')" class="bg-white px-5 py-2.5 anime-border hover:bg-pink-200 font-bold text-lg transition-colors">感情婚姻</button>
+            <button onclick="filterCards('parenting')" class="bg-white px-5 py-2.5 anime-border hover:bg-green-200 font-bold text-lg transition-colors">催生育兒</button>
+        </nav>
+
+        <main id="card-display" class="w-full max-w-lg px-4 card-container h-[600px] mb-12">
+            <!-- 由 JS 注入 -->
+        </main>
+
+        <div class="flex flex-col sm:flex-row flex-wrap justify-center gap-6 mb-20 px-4">
+            <button onclick="drawRandomCard()" class="flex items-center justify-center gap-3 bg-orange-600 text-white px-8 py-5 anime-border font-black text-xl md:text-2xl hover:bg-orange-700 active:scale-95 transition-all w-full sm:w-auto">
+                <i data-lucide="refresh-cw"></i> 換個情境練習
+            </button>
+            <button onclick="shareOnThreads()" class="flex items-center justify-center gap-3 bg-black text-white px-8 py-5 anime-border font-black text-xl md:text-2xl hover:bg-gray-800 active:scale-95 transition-all w-full sm:w-auto">
+                <i data-lucide="share-2"></i> 分享至 Threads
+            </button>
+            <button onclick="copyPageLink()" class="flex items-center justify-center gap-3 bg-blue-600 text-white px-8 py-5 anime-border font-black text-xl md:text-2xl hover:bg-blue-700 active:scale-95 transition-all w-full sm:w-auto">
+                <i data-lucide="link"></i> 複製連結轉傳
+            </button>
+        </div>
+
+        <section class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-3 gap-8 mb-24 px-4 text-center">
+            <a href="https://podcasts.apple.com/tw/podcast/%E8%82%A5%E7%89%A1%E8%A0%A3%E7%9A%84%E5%A4%A7%E5%B0%8F%E4%BA%8B/id1546807065" 
+               target="_blank" 
+               onclick="handleInfoClick(this)"
+               class="bg-white p-8 anime-border hover:-translate-y-2 transition-transform block group">
+                <div class="text-orange-600 mb-4 flex justify-center info-icon"><i data-lucide="mic" size="40"></i></div>
+                <h3 class="font-black text-xl md:text-2xl mb-4 group-hover:text-orange-600">《肥牡蠣的大小事》Podcast</h3>
+                <p class="text-base md:text-lg text-gray-700 leading-relaxed text-left">Apple Podcast 熱門榜推薦，透過人生分享、情感與自我療癒的對談，過程真摯且紀實。</p>
+            </a>
+            <a href="https://lcf.oen.tw/" 
+               target="_blank" 
+               onclick="handleInfoClick(this)"
+               class="bg-white p-8 anime-border hover:-translate-y-2 transition-transform block group">
+                <div class="text-blue-600 mb-4 flex justify-center info-icon"><i data-lucide="graduation-cap" size="40"></i></div>
+                <h3 class="font-black text-xl md:text-2xl mb-4 group-hover:text-blue-600">SEL 情緒力培養年</h3>
+                <p class="text-base md:text-lg text-gray-700 leading-relaxed text-left">3-5 月開課，幫你解決內耗、學會改變衝突，用理論搭配遊戲化做情緒覺察練習。</p>
+            </a>
+            <a href="https://line.me/ti/g2/QdcpjzvhMBkwRsceEkFdyP97e-fNqA8Pn_9G2w?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" 
+               target="_blank" 
+               onclick="handleInfoClick(this)"
+               class="bg-white p-8 anime-border hover:-translate-y-2 transition-transform block group">
+                <div class="text-pink-600 mb-4 flex justify-center info-icon"><i data-lucide="heart" size="40"></i></div>
+                <h3 class="font-black text-xl md:text-2xl mb-4 group-hover:text-pink-600">LuvBar 練愛社群</h3>
+                <p class="text-base md:text-lg text-gray-700 leading-relaxed text-left">這裡有一群人歡迎你加入，讓我們在為愛練習的路上不孤單，持續在社群裡互動與討論。</p>
+            </a>
+        </section>
+
+        <footer class="text-gray-500 text-base mb-16 text-center pb-8 px-4">
+            <p class="font-bold text-lg mb-2 text-gray-700">© 2026 愛盟家庭文教基金會</p>
+            <p>為愛學習持續練習，是一件幸福的事</p>
+        </footer>
+    </div>
+
+    <div id="message-box" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-8 py-4 rounded-xl shadow-2xl opacity-0 pointer-events-none transition-opacity duration-300 font-bold z-[200] text-lg">
+        複製成功！
+    </div>
+
+    <script>
+        const cardsData = [
+            // --- 職涯薪資 (真摯且堅定版) ---
+            { id: 1, category: 'career', question: '薪水多少？有沒有年終？', answer: '其實比起數字，我更在乎這一年過得充不充實。今年我覺得在心情調節上進步很多，對目前的狀態滿滿意的。', friendly: '我看你一直都很有責任感，最近工作生活過得還順心嗎？有沒有什麼讓你很有成就感的小事？', selTip: '【設定邊界】用宏觀的成長指標代替單一數字，展現自我價值主導權。', color: 'bg-blue-100' },
+            { id: 2, category: 'career', question: '要不要考慮去考公務員比較穩？', answer: '謝謝您的建議。我現在的工作能讓我學到很多解決問題的能力，我覺得趁年輕多磨練，對未來的穩定更有幫助。', friendly: '我看你做事一向很細心穩重，目前的環境你還喜歡嗎？有沒有什麼未來你想嘗試的新挑戰？', selTip: '【自我價值】強調目前工作對長遠規劃的必要性，展現思考深度。', color: 'bg-blue-100' },
+            { id: 7, category: 'career', question: '同學阿明都當經理了，你呢？', answer: '每個人成長的節奏都不太一樣。我現在正專心深耕我的專業影響力，對目前的進度我覺得很踏實，這是我比較看重的。', friendly: '看你一直很有自己的想法，最近在專業領域上有什麼新的收穫或心得嗎？', selTip: '【拒絕比較】以「踏實感」建立心理緩衝，不捲入他人的成功標準。', color: 'bg-blue-100' },
+            { id: 8, category: 'career', question: '每天加班這麼晚，身體壞了怎麼辦？', answer: '謝謝您的關心。我也很重視健康，所以最近在練習更有效率的工作方法，想辦法平衡成就感與休息時間。', friendly: '你總是這麼盡責努力，工作辛苦了，最近有沒有找時間讓自己好好放鬆或睡個好覺？', selTip: '【自我照顧】將長輩的焦慮轉化為正向的自我調節計畫。', color: 'bg-blue-100' },
+            { id: 9, category: 'career', question: '你這行我不懂，感覺很不穩定？', answer: '現在環境變遷很快，我這行非常需要情緒調節力跟跨域連結。我覺得具備這些能力，才是真正能面對未來的穩定資產。', friendly: '看你具備很強的適應力，可以跟我分享一下你這行最有挑戰性、最有趣的地方嗎？', selTip: '【未來職能】以現代觀點更新長輩對「穩定」的認知，建立共識。', color: 'bg-blue-100' },
+            { id: 10, category: 'career', question: '什麼時候要自己創業當老闆？', answer: '目前的工作對我來說就像在「內部創業」。我正在學習利用公司的資源來磨練領導力，這是我現階段最需要的練習。', friendly: '我看你很有開拓新事物的勇氣，你對未來的職業生涯有什麼新藍圖嗎？', selTip: '【自我價值】賦予當前身份新的意義，展現對生涯的主動控管。', color: 'bg-blue-100' },
+            { id: 11, category: 'career', question: '年薪有沒有破百萬？', answer: '我的「綜合資產」正在穩步成長。除了收入，我現在花更多心思在經營深度的關係資產，我覺得這些對未來非常關鍵。', friendly: '看你對生活一直很有規劃，最近有什麼特別想達成的夢想清單嗎？', selTip: '【設定邊界】擴大「資產」的定義，引導對話轉向更有質感的面向。', color: 'bg-blue-100' },
+            { id: 12, category: 'career', question: '聽說你們公司在裁員，你還穩吧？', answer: '面對不確定的變動，我現在更看重練習「心理韌性」。只要內在足夠穩定，不管環境怎麼變，我都能找回掌控感。', friendly: '我看你面對壓力一直很有韌性，最近職場變動大，你的心情還好嗎？', selTip: '【心理韌性】展現面對變化的穩定核心，降低對方的過度擔憂。', color: 'bg-blue-100' },
+            { id: 13, category: 'career', question: '為什麼不回老家發展，生活費比較省？', answer: '現在外面的磨練對我來說是很珍貴的投資。趁現在練習獨立決定生活的大小事，這份成長我覺得非常有價值。', friendly: '看你一直很嚮往獨立生活，在外面闖蕩辛苦了，目前居住的環境住得還習慣嗎？', selTip: '【負責決定】強調目前生活對人格成熟的必要性。', color: 'bg-blue-100' },
+            { id: 14, category: 'career', question: '過年發幾個月年終？', answer: '今年最大的收穫是學到了「成長思維」。比起獎金數字，這份能夠受用一輩子的心智資產，才是我最珍惜的。', friendly: '看你這一整年投入得非常認真，過年有沒有打算送自己什麼小禮物慰勞一下？', selTip: '【認知重構】重新定義價值，保持溫和且真摯的互動氣氛。', color: 'bg-blue-100' },
+            { id: 15, category: 'career', question: '你這工作整天對電腦，沒出息？', answer: '電腦是我連結世界的工具。我正透過它創造數位時代的價值，過程非常有成就感，也學到很多解決問題的方法。', friendly: '我看你在專業上非常專注，平常你是怎麼保持這種源源不絕的工作動力的？', selTip: '【認同自我】肯定職業尊嚴，以真誠的成就感回應傳統成見。', color: 'bg-blue-100' },
+            { id: 16, category: 'career', question: '同事對你好不好？會不會被欺負？', answer: '謝謝您的關懷。我正在修練「職場關係學」，學習如何用溝通將衝突轉化為合作，目前與大家的互動我覺得很有進步。', friendly: '看你待人一直很真誠，在公司有沒有交到志同道合的好友？相處感覺如何？', selTip: '【衝突應對】展現主動處理人際關係的能力，讓長輩放心。', color: 'bg-blue-100' },
+
+            // --- 感情婚姻 ---
+            { id: 3, category: 'relationship', question: '有沒有對象？什麼時候要帶回來？', answer: '我現在比較看重的是兩個人能不能一起成長。我想花點時間找到對的連結，這對彼此的未來都比較負責。', friendly: '我看你總是把生活經營得很有質感，最近生活圈有認識什麼有趣的新朋友嗎？', selTip: '【深度關係】將重點從「有無對象」轉向「對連結的慎重」。', color: 'bg-pink-100' },
+            { id: 4, category: 'relationship', question: '眼光別太高，差不多就可以結了。', answer: '我覺得婚姻需要建立在成熟的「愛的決定」上。價值觀契合了，未來的家庭生活才會真正有品質，這點我比較堅持。', friendly: '我看你很有主見也知道自己要什麼，對你來說，理想的伴侶最重要具備什麼特質？', selTip: '【負責決定】以「品質」為由堅定立場，避免被隨意勸婚。', color: 'bg-pink-100' },
+            { id: 17, category: 'relationship', question: '隔壁王伯伯的孫子都要上小學了，你呢？', answer: '看到大家都這麼幸福很棒。我現在也在練習「愛的決定學」，想先讓自己更成熟穩定，這樣以後成立家庭才會更幸福。', friendly: '我看你一直活得很有自己風格，我很關心你目前的狀態，現在的步調是你喜歡的嗎？', selTip: '【延遲滿足】肯定他人的幸福，同時溫柔地拉回個人的時差節奏。', color: 'bg-pink-100' },
+            { id: 18, category: 'relationship', question: '交往這麼久了，打算什麼時候結婚？', answer: '我們正在深化彼此的情感連結。想先練習建立穩定的心理安全感，等準備好了，自然會往下一階段邁進。', friendly: '看你們這段感情經營得非常細膩，最近有沒有一起規劃什麼好玩的旅行？', selTip: '【深度關係】強調心理準備的重要性，而非被動完成程序。', color: 'bg-pink-100' },
+            { id: 19, category: 'relationship', question: '沒對象的話，要不要安排相親？', answer: '謝謝您的熱心。我目前很享受與自己相處的時光，想等把自己準備得更好，相信對的緣分自然會出現。', friendly: '我看你最近懂得好好愛自己、把自己照顧得很棒，有沒有什麼是你現在最享受的單身時光？', selTip: '【自我覺察】真誠地表達對現狀的滿意度，溫和保護私人空間。', color: 'bg-pink-100' },
+            { id: 20, category: 'relationship', question: '男生/女生年紀大了就不好挑了。', answer: '我覺得年紀是成熟的禮物。我追求的是靈魂的共振，不是被市場挑選，我相信成熟的我也會遇到真正懂我的人。', friendly: '我覺得你現在非常有成熟魅力，你最喜歡自己目前的哪個部分？', selTip: '【拒絕物化】肯定成熟價值，以自信的態度化解年齡焦慮。', color: 'bg-pink-100' },
+            { id: 21, category: 'relationship', question: '在一起就是要互相遷就，別太任性。', answer: '我們現在學習的是「高品質溝通」。愛盟說，成熟的愛是能接納彼此真實的樣子，而不只是一味的忍耐。', friendly: '我看你很有包容力，跟伴侶相處時，你們通常是怎麼分享彼此不同觀點的？', selTip: '【健康邊界】區分「遷就」與「接納」，展現成熟的溝通觀念。', color: 'bg-pink-100' },
+            { id: 22, category: 'relationship', question: '現在不婚不生，老了誰照顧你？', answer: '我正在建立深度的共好社群。練習經營有品質的關係連結，我覺得這才是最穩定、也最能讓人安心的保障。', friendly: '我看你人緣很好，身邊的支持系統也很棒，最近有沒有感受到誰帶給你的溫暖？', selTip: '【多元連結】重新定義老後的安全感，減少焦慮的傳遞。', color: 'bg-pink-100' },
+            { id: 23, category: 'relationship', question: '對方家境怎麼樣？有車有房嗎？', answer: '比起物質條件，我覺得他擁有的「情緒資產」更難得。在經營長遠關係中，這種心理穩定度是我最看重的。', friendly: '看你挑選伴侶很有深度，另一半最吸引你、讓你覺得最安心的特質是什麼？', selTip: '【價值優先】引導對話轉向內在素質，提升互動層次。', color: 'bg-pink-100' },
+            { id: 24, category: 'relationship', question: '吵架很正常，忍一忍就過去了。', answer: '我們不想只靠忍耐。我們在練習如何「修復衝突」，這樣關係才不會內耗，反而能透過溝通變得更親近。', friendly: '我看你很願意在關係中溝通，發生爭執時，你們是怎麼一起練習找回安全感的？', selTip: '【情緒引導】拒絕壓抑，展現對關係經營的高標準與主動性。', color: 'bg-pink-100' },
+            { id: 25, category: 'relationship', question: '是不是忙工作忙到沒時間談戀愛？', answer: '我確實正在練習「生活重心管理」。想先在專業上建立自信，等時機成熟，我會更有能量把這份情緒力投入到感情中。', friendly: '看你工作態度很積極，在忙碌的工作之餘，你都如何預留時間給自己？', selTip: '【自我調節】展現平衡生活的智慧，降低對方的催促。', color: 'bg-pink-100' },
+            { id: 26, category: 'relationship', question: '要不要介紹阿明給你認識？很有錢。', answer: '謝謝您的心意。我現在比較看重對方的「情緒顆粒度」，兩個人能不能聽懂彼此的心聲，才是我最想要的連結。', friendly: '我看你一直很重視心靈成長，如果你想認識新對象，你最希望我們幫你注意什麼性格？', selTip: '【核心需求】重申擇偶標準，溫和拒絕不合適的推薦。', color: 'bg-pink-100' },
+
+            // --- 催生育兒 ---
+            { id: 5, category: 'parenting', question: '什麼時候要生小孩？', answer: '我們現在正練習成為彼此更好的隊友。想等心理安全感跟資源都準備好了，再用最棒的狀態迎接新生命。', friendly: '我看你們對待人一直都很體貼，最近兩個人相處的時光還甜蜜嗎？', selTip: '【負責親職】將話題轉向育兒的慎重準備與責任感。', color: 'bg-green-100' },
+            { id: 6, category: 'parenting', question: '小孩成績怎麼樣？', answer: '除了分數，我們更重視他能不能覺察自己的情緒。這份軟實力，是我最想送給他的未來競爭力。', friendly: '我看你把孩子教得很有禮貌，他最近在學校有沒有發現什麼有趣的新興趣？', selTip: '【未來職能】強調情緒力是 AI 時代最重要的核心能力。', color: 'bg-green-100' },
+            { id: 27, category: 'parenting', question: '生一個太孤單，什麼時候生第二個？', answer: '我正在精進「精緻化陪伴」。想把最好的能量都留給現在的孩子，給他高品質的心理安全感是我目前的重點。', friendly: '我看你照顧孩子真的非常細心，目前育兒的體力跟心情還負荷得過來嗎？', selTip: '【專注當下】推崇陪伴品質而非成員數量，緩解壓力。', color: 'bg-green-100' },
+            { id: 28, category: 'parenting', question: '小孩怎麼這麼瘦？是不是沒給吃飽？', answer: '我們正在培養他的「自主進食力」。只要他健康、有活力，我們希望他在吃飯時感到成就感，不強求食量。', friendly: '我看你對營養攝取很重視，孩子最近的胃口好嗎？有沒有特別愛吃的？', selTip: '【尊重個體】尊重孩子的生理步調，降低外在比較焦慮。', color: 'bg-green-100' },
+            { id: 29, category: 'parenting', question: '我們以前都這樣帶小孩，也沒出事。', answer: '真的謝謝你們以前的付出。每個時代挑戰不同，我們現在學的是科學情緒教養，希望能更精準對應現代的需求。', friendly: '我看你很有學習新知識的眼光，關於現在重視的情緒教養，可以教教我嗎？', selTip: '【更新觀念】先肯定長輩的辛勞，再溫和解釋現代教養的必要。', color: 'bg-green-100' },
+            { id: 30, category: 'parenting', question: '幾歲了還包尿布？隔壁小孩早就不用了。', answer: '我們想尊重他的身體發展步調。愛盟教我們不跟別人比較，孩子才會長出自信，這對他的心理健康非常重要。', friendly: '看你對孩子一直很有耐心，他在生活自理上有什麼讓你驚喜的小進步嗎？', selTip: '【拒絕競爭】堅定立場，保護孩子的自尊心與發展節奏。', color: 'bg-green-100' },
+            { id: 31, category: 'parenting', question: '怎麼不給小孩吃零食？過年開心一下嘛。', answer: '我們正在培養他的「延遲滿足感」。比起零食，我們發現他現在更期待與你們玩遊戲的那種快樂。', friendly: '我看你帶孩子很有原則，除了糖果，還有什麼驚喜是孩子會很開心的？', selTip: '【轉移獎勵】維護育兒原則，將快樂定義引導向高品質的陪伴。', color: 'bg-green-100' },
+            { id: 32, category: 'parenting', question: '小孩個性這麼皮？沒在教嗎？', answer: '這代表他非常有探索好奇心。我正在引導他學習調節情緒，把這份生命力轉化成未來的學習動力。', friendly: '這孩子看起來真的活力滿滿！他在探索新事物的時候通常對什麼最感興趣？', selTip: '【正向轉化】重新定義孩子特質，展現教養的高度與專業。', color: 'bg-green-100' },
+            { id: 33, category: 'parenting', question: '你看人家那個誰，小孩多乖。', answer: '每個孩子都是獨一無二的。我希望他能成為一個有自覺的人，而不是努力成為別人的複製品。', friendly: '我看這孩子活得很有生命力，你覺得他性格中最獨特、最可愛的地方是什麼？', selTip: '【獨特價值】肯定孩子本質，引導長輩看見孩子的獨特性。', color: 'bg-green-100' },
+            { id: 34, category: 'parenting', question: '趁我們還能帶，趕快多生幾個。', answer: '謝謝您的愛心。我們想先把目前的家庭安全感系統建好，等資源跟心情都合適時，會再慎重評估的。', friendly: '我看你很重視家庭的安全感系統，如果你們有考慮增添成員，我們隨時願意支援。', selTip: '【系統思考】展現對家庭責任的成熟思考，不輕易隨波逐流。', color: 'bg-green-100' },
+            { id: 35, category: 'parenting', question: '為什麼小孩不叫人？沒禮貌。', answer: '他現在可能還在觀察環境。處於自我保護期是正常的，等他感覺安全了，他的情緒力會讓他自然表達。', friendly: '我看你很尊重孩子的個人特質，我們可以先跟他打個招呼，等他自在些再說。', selTip: '【心理安全】提供合理的心理學解釋，降低現場的緊繃感。', color: 'bg-green-100' },
+            { id: 36, category: 'parenting', question: '給小孩看這書？去補英文比較實在。', answer: '我們覺得學會覺察情緒是 AI 取代不了的能力。能在故事中建立內在力量，這對他的未來是非常大的幫助。', friendly: '我看你挑選繪本很有眼光，這本書能幫助孩子建立什麼樣的內在力量呢？', selTip: '【核心能力】堅持軟實力的重要性，展現對未來趨勢的洞察。', color: 'bg-green-100' }
+        ];
+
+        let currentCards = [...cardsData];
+        let currentIndex = 0;
+        let dustInterval = null;
+
+        function renderCard(card) {
+            const display = document.getElementById('card-display');
+            if (!display) return;
+            display.innerHTML = `
+                <div id="active-card" class="card-inner w-full h-full relative" onclick="toggleFlip()">
+                    <!-- Front -->
+                    <div class="card-front bg-white p-6 md:p-10 anime-border flex flex-col items-center justify-between text-center overflow-y-auto">
+                        <div class="w-full">
+                             <span class="inline-block text-sm font-black bg-orange-500 text-white px-3 py-1 mb-6 shadow-sm">過年難題襲來</span>
+                             <div class="text-4xl text-orange-600 mb-6"><i data-lucide="help-circle"></i></div>
+                             <h2 class="text-2xl md:text-3xl font-black mb-10 leading-tight">「${card.question}」</h2>
+                        </div>
+
+                        <!-- 愛的連結學 -->
+                        <div class="w-full bg-pink-50 p-6 rounded-2xl border-2 border-dashed border-pink-300 shadow-inner">
+                             <div class="flex items-center justify-center gap-2 mb-3">
+                                <span class="text-pink-600"><i data-lucide="heart-handshake" size="24"></i></span>
+                                <span class="text-pink-800 font-black text-xl">💡 換個問法更靠近</span>
+                             </div>
+                             <p class="text-lg md:text-xl text-pink-900 leading-relaxed italic font-medium">
+                                ${card.friendly}
+                             </p>
+                        </div>
+                        
+                        <p class="text-gray-400 font-bold animate-pulse text-base mt-6">點擊查看高情緒力如何回應</p>
+                    </div>
+
+                    <!-- Back -->
+                    <div class="card-back ${card.color} p-8 md:p-12 anime-border flex flex-col items-center justify-center text-center border-4 overflow-y-auto">
+                        <span class="absolute top-6 left-6 text-sm font-black bg-blue-600 text-white px-3 py-1">情緒力對應</span>
+                        
+                        <div class="text-5xl text-blue-600 mb-8"><i data-lucide="shield-check"></i></div>
+                        <p class="text-2xl md:text-3xl font-black mb-10 leading-relaxed text-gray-800">${card.answer}</p>
+
+                        <div class="w-full bg-white/60 p-6 rounded-xl text-lg md:text-xl text-gray-700 font-medium text-left leading-relaxed border border-blue-200 shadow-sm">
+                            <span class="text-blue-700 font-black block mb-2 underline decoration-blue-300 underline-offset-4">愛盟 SEL 秘訣：</span>
+                            ${card.selTip}
+                        </div>
+                        
+                        <p class="text-gray-500 font-bold text-sm mt-8">點擊返回看問題對比</p>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function toggleFlip() {
+            const activeCard = document.getElementById('active-card');
+            if (activeCard) activeCard.classList.toggle('is-flipped');
+        }
+
+        function filterCards(cat) {
+            currentCards = cat === 'all' ? [...cardsData] : cardsData.filter(c => c.category === cat);
+            currentIndex = 0;
+            renderCard(currentCards[currentIndex]);
+        }
+
+        function drawRandomCard() {
+            currentIndex = Math.floor(Math.random() * currentCards.length);
+            const cardElement = document.getElementById('active-card');
+            if (!cardElement) return;
+            cardElement.classList.remove('is-flipped');
+            cardElement.style.opacity = '0';
+            setTimeout(() => {
+                renderCard(currentCards[currentIndex]);
+                const newCard = document.getElementById('active-card');
+                if (newCard) newCard.style.opacity = '1';
+            }, 300);
+        }
+
+        function shareOnThreads() {
+            const card = currentCards[currentIndex];
+            const text = `過年長輩問我：「${card.question}」\n\n我用愛盟情緒力神回覆：${card.answer}\n\n這招「稱讚＋問候」也超好用：\n${card.friendly}\n\n#愛盟2026過年生存戰 #情緒力學習 #愛的連結學`;
+            copyToClipboard(text);
+            showToast("內容已複製！去 Threads 破圈吧！");
+        }
+
+        function copyPageLink() {
+            const url = window.location.href;
+            copyToClipboard(url);
+            showToast("網址已複製！快傳給親友吧！");
+        }
+
+        function copyToClipboard(text) {
+            const dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = text;
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('message-box');
+            if (!toast) return;
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+        }
+
+        function handleInfoClick(element) {
+            const icon = element.querySelector('.info-icon');
+            if (icon) {
+                icon.classList.remove('shake-effect');
+                void icon.offsetWidth; 
+                icon.classList.add('shake-effect');
+            }
+        }
+
+        function createDust() {
+            const pony = document.getElementById('pony-instance');
+            if (!pony) return;
+            const rect = pony.getBoundingClientRect();
+            if (rect.left < -100 || rect.left > window.innerWidth + 100) return;
+
+            const dust = document.createElement('div');
+            dust.className = 'dust-cloud';
+            dust.innerHTML = '💨';
+            dust.style.left = `${rect.left + rect.width}px`;
+            dust.style.top = `${rect.top + rect.height - 15}px`;
+            document.body.appendChild(dust);
+            setTimeout(() => dust.remove(), 800);
+        }
+
+        function triggerPony() {
+            const group = document.getElementById('pony-group');
+            if (!group) return;
+
+            const rightPaths = ['run-r-to-l-mid', 'run-r-to-l-top', 'run-r-to-l-bottom'];
+            const path = rightPaths[Math.floor(Math.random() * rightPaths.length)];
+            
+            group.classList.remove('pony-active');
+            group.style.animationName = 'none';
+            void group.offsetWidth; 
+            
+            group.style.flexDirection = 'row'; 
+            group.style.animationName = path;
+            group.classList.add('pony-active');
+
+            if (dustInterval) clearInterval(dustInterval);
+            dustInterval = setInterval(createDust, 130);
+
+            setTimeout(() => {
+                if (dustInterval) clearInterval(dustInterval);
+                group.classList.remove('pony-active');
+            }, 10000);
+
+            setTimeout(triggerPony, Math.random() * 10000 + 15000);
+        }
+
+        window.onload = () => {
+            renderCard(currentCards[0]);
+            lucide.createIcons();
+            setTimeout(triggerPony, 5000);
+        };
+    </script>
+</body>
+</html>
