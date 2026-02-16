@@ -4,24 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>愛盟陪你通關！2026 過年生存戰 - 情緒力互動卡牌</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2DDVRYVTKN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-2DDVRYVTKN');
+    </script>
+
+    <!-- Microsoft Clarity -->
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "vhd1xq80kv");
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-2DDVRYVTKN"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-2DDVRYVTKN');
-</script>
-    <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "vhd1xq80kv");
-</script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
         
@@ -31,7 +34,6 @@
             overflow-x: hidden;
             margin: 0;
             padding: 0;
-            /* 基礎字級優化 */
             font-size: 18px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
@@ -176,7 +178,6 @@
             opacity: 0.12;
         }
 
-        /* 手機版排版調整 */
         .overflow-y-auto::-webkit-scrollbar { width: 6px; }
         .overflow-y-auto::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
     </style>
@@ -195,7 +196,7 @@
         </div>
     </div>
 
-    <!-- 背景裝飾物 (手機版不隱藏) -->
+    <!-- 背景裝飾物 -->
     <div class="fixed top-[-10px] left-2 md:top-[-20px] md:left-4 swing-item z-20">
         <svg width="45" height="110" class="md:w-24 md:h-[220px]" viewBox="0 0 80 200">
             <rect x="38" y="0" width="4" height="40" fill="#8B4513" />
@@ -244,10 +245,10 @@
         </header>
 
         <nav class="w-full max-w-4xl flex flex-wrap justify-center gap-3 mb-10 px-4">
-            <button onclick="filterCards('all')" class="bg-white px-6 py-3 anime-border hover:bg-yellow-200 font-black text-lg md:text-xl transition-all active:scale-95">全部題目</button>
-            <button onclick="filterCards('career')" class="bg-white px-6 py-3 anime-border hover:bg-blue-200 font-black text-lg md:text-xl transition-all active:scale-95">職涯薪資</button>
-            <button onclick="filterCards('relationship')" class="bg-white px-6 py-3 anime-border hover:bg-pink-200 font-black text-lg md:text-xl transition-all active:scale-95">感情婚姻</button>
-            <button onclick="filterCards('parenting')" class="bg-white px-6 py-3 anime-border hover:bg-green-200 font-black text-lg md:text-xl transition-all active:scale-95">催生育兒</button>
+            <button onclick="filterCards('all', '全部題目')" class="bg-white px-6 py-3 anime-border hover:bg-yellow-200 font-black text-lg md:text-xl transition-all active:scale-95">全部題目</button>
+            <button onclick="filterCards('career', '職涯薪資')" class="bg-white px-6 py-3 anime-border hover:bg-blue-200 font-black text-lg md:text-xl transition-all active:scale-95">職涯薪資</button>
+            <button onclick="filterCards('relationship', '感情婚姻')" class="bg-white px-6 py-3 anime-border hover:bg-pink-200 font-black text-lg md:text-xl transition-all active:scale-95">感情婚姻</button>
+            <button onclick="filterCards('parenting', '催生育兒')" class="bg-white px-6 py-3 anime-border hover:bg-green-200 font-black text-lg md:text-xl transition-all active:scale-95">催生育兒</button>
         </nav>
 
         <main id="card-display" class="w-full max-w-xl px-4 card-container h-[640px] md:h-[680px] mb-12">
@@ -269,15 +270,15 @@
         <section class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-3 gap-10 mb-28 px-4 text-center">
             <a href="https://podcasts.apple.com/tw/podcast/%E8%82%A5%E7%89%A1%E8%A0%A3%E7%9A%84%E5%A4%A7%E5%B0%8F%E4%BA%8B/id1546807065" 
                target="_blank" 
-               onclick="handleInfoClick(this)"
+               onclick="handleInfoClick(this, 'Podcast')"
                class="bg-white p-10 anime-border hover:-translate-y-2 transition-transform block group">
                 <div class="text-orange-600 mb-6 flex justify-center info-icon"><i data-lucide="mic" size="48"></i></div>
                 <h3 class="font-black text-xl md:text-3xl mb-4 group-hover:text-orange-600">《肥牡蠣的大小事》Podcast</h3>
-                <p class="text-lg md:text-xl text-gray-700 leading-relaxed text-left font-medium">Apple Podcast 熱門榜推薦，透過真摯對談在迷惘中找回溫慢力量。</p>
+                <p class="text-lg md:text-xl text-gray-700 leading-relaxed text-left font-medium">Apple Podcast 熱門榜推薦，透過真摯對談在迷惘中找回溫暖力量。</p>
             </a>
             <a href="https://lcf.oen.tw/" 
                target="_blank" 
-               onclick="handleInfoClick(this)"
+               onclick="handleInfoClick(this, 'SEL專業認證')"
                class="bg-white p-10 anime-border hover:-translate-y-2 transition-transform block group">
                 <div class="text-blue-600 mb-6 flex justify-center info-icon"><i data-lucide="graduation-cap" size="48"></i></div>
                 <h3 class="font-black text-xl md:text-3xl mb-4 group-hover:text-blue-600">SEL 情緒力培養年</h3>
@@ -285,7 +286,7 @@
             </a>
             <a href="https://line.me/ti/g2/QdcpjzvhMBkwRsceEkFdyP97e-fNqA8Pn_9G2w?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" 
                target="_blank" 
-               onclick="handleInfoClick(this)"
+               onclick="handleInfoClick(this, '練愛社群')"
                class="bg-white p-10 anime-border hover:-translate-y-2 transition-transform block group">
                 <div class="text-pink-600 mb-6 flex justify-center info-icon"><i data-lucide="heart" size="48"></i></div>
                 <h3 class="font-black text-xl md:text-3xl mb-4 group-hover:text-pink-600">LuvBar 練愛社群</h3>
@@ -305,12 +306,12 @@
 
     <script>
         const cardsData = [
-            // --- 職涯薪資 (優化斷句) ---
+            // --- 職涯薪資 ---
             { id: 1, category: 'career', question: '薪水多少？<br>有沒有年終？', answer: '其實比起數字，我更在乎這一年過得充不充實。今年我覺得在心情調節上進步很多，對目前的狀態滿滿意的。', friendly: '我看你一直都很有責任感，最近工作生活過得還順心嗎？有沒有什麼讓你很有成就感的小事？', selTip: '用宏觀的成長指標代替單一數字，展現自我價值主導權。', color: 'bg-blue-100' },
             { id: 2, category: 'career', question: '要不要考慮去考<br>公務員比較穩？', answer: '謝謝您的建議。我現在的工作能讓我學到很多解決問題的能力，我覺得趁年輕多磨練，對未來的穩定更有幫助。', friendly: '我看你做事一向很細心穩重，目前的環境你還喜歡嗎？有沒有什麼未來你想嘗試的新挑戰？', selTip: '強調目前工作對長遠規劃的必要性，展現思考深度。', color: 'bg-blue-100' },
             { id: 7, category: 'career', question: '同學阿明都當經理了，<br>你呢？', answer: '每個人成長的節奏都不太一樣。我現在正專心深耕我的專業影響力，對目前的進度我覺得很踏實，這是我比較看重的。', friendly: '看你一直很有自己的想法，最近在專業領域上有什麼新的收穫或心得嗎？', selTip: '以「踏實感」建立心理緩衝，不捲入他人的成功標準。', color: 'bg-blue-100' },
             { id: 8, category: 'career', question: '每天加班這麼晚，<br>身體壞了怎麼辦？', answer: '謝謝您的關心。我也很重視健康，所以最近在練習更有效率的工作方法，想辦法平衡成就感與休息時間。', friendly: '你總是這麼盡責努力，工作辛苦了，最近有沒有找時間讓自己好好放鬆或睡個好覺？', selTip: '將長輩的焦慮轉化為正向的自我調節計畫。', color: 'bg-blue-100' },
-            { id: 9, category: 'career', question: '你這行我不懂，<br>感覺很不穩定？', answer: '現在環境變遷很快，我這行非常需要情緒調節力跟跨域連結。我覺得具備這些能力，才是真正能面對未來的穩定資產。', friendly: '看你具備很強的適應力，可以跟我分享一下你這行最有挑戰性、最有趣的地方嗎？', selTip: '以現代觀點維修長輩對「穩定」的認知，建立共識。', color: 'bg-blue-100' },
+            { id: 9, category: 'career', question: '你這行我不懂，<br>感覺很不穩定？', answer: '現在環境變遷很快，我這行非常需要情緒調節力跟跨域連結。我覺得具備這些能力，才是真正能面對未來的穩定資產。', friendly: '看你具備很強的適應力，可以跟我分享一下你這行最有挑戰性、最有趣的地方嗎？', selTip: '以現代觀點更新長輩對「穩定」的認知，建立共識。', color: 'bg-blue-100' },
             { id: 10, category: 'career', question: '什麼時候要自己<br>創業當老闆？', answer: '目前的工作對我來說就像在「內部創業」。我正在學習利用公司的資源來磨練領導力，這是我現階段最需要的練習。', friendly: '我看你很有開拓新事物的勇氣，你對未來的職業生涯有什麼新藍圖嗎？', selTip: '賦予當前身份新的意義，展現對生涯的主動控管。', color: 'bg-blue-100' },
             { id: 11, category: 'career', question: '年薪有沒有<br>破百萬？', answer: '我的「綜合資產」正在穩步成長。除了收入，我現在花更多心思在經營深度的關係資產，我覺得這些對未來非常關鍵。', friendly: '看你對生活一直很有規劃，最近有什麼特別想達成的夢夢清單嗎？', selTip: '擴大「資產」的定義，引導對話轉向更有質感的面向。', color: 'bg-blue-100' },
             { id: 12, category: 'career', question: '聽說你們公司在裁員，<br>你還穩吧？', answer: '面對不確定的變動，我現在更看重練習「心理韌性」。只要內在足夠穩定，不管環境怎麼變，我都能找回掌控感。', friendly: '我看你面對壓力一直很有韌性，最近職場變動大，你的心情還好嗎？', selTip: '展現面對變化的穩定核心，降低對方的過度擔憂。', color: 'bg-blue-100' },
@@ -365,11 +366,9 @@
                              <h2 class="text-xl md:text-3xl font-black mb-10 leading-relaxed tracking-wide">${card.question}</h2>
                         </div>
 
-                        <!-- 愛的連結學 (優化對稱與字級) -->
                         <div class="w-full bg-pink-50 p-6 md:p-10 rounded-3xl border-3 border-dashed border-pink-300 shadow-inner">
                              <div class="flex items-center justify-center gap-3 mb-5">
                                 <span class="text-pink-600"><i data-lucide="heart-handshake" size="32"></i></span>
-                                <!-- 字級小 2 級 (原本 xl/3xl -> lg/xl) -->
                                 <span class="text-pink-800 font-black text-lg md:text-xl">換個問法更靠近</span>
                                 <span class="text-pink-600"><i data-lucide="heart-handshake" size="32"></i></span>
                              </div>
@@ -378,11 +377,10 @@
                              </p>
                         </div>
                         
-                        <!-- 導引文字顏色改為鮮明的藍色 (blue-600) -->
                         <p class="text-blue-600 font-black animate-pulse text-xl mt-8">點擊查看高情緒力如何回應</p>
                     </div>
 
-                    <!-- Back (背面 - 結構與正面一致置中) -->
+                    <!-- Back (背面) -->
                     <div class="card-back ${card.color} p-8 md:p-14 anime-border flex flex-col items-center justify-between text-center border-5 overflow-y-auto">
                         <div class="w-full flex flex-col items-center">
                              <span class="inline-block text-base font-black bg-blue-600 text-white px-5 py-1.5 mb-8 shadow-sm">情緒力對應</span>
@@ -404,13 +402,24 @@
 
         function toggleFlip() {
             const activeCard = document.getElementById('active-card');
-            if (activeCard) activeCard.classList.toggle('is-flipped');
+            if (activeCard) {
+                activeCard.classList.toggle('is-flipped');
+                // 追蹤翻牌事件
+                gtag('event', 'card_flip', {
+                    'card_id': currentCards[currentIndex].id,
+                    'card_question': currentCards[currentIndex].question.replace('<br>', ' ')
+                });
+            }
         }
 
-        function filterCards(cat) {
+        function filterCards(cat, label) {
             currentCards = cat === 'all' ? [...cardsData] : cardsData.filter(c => c.category === cat);
             currentIndex = 0;
             renderCard(currentCards[currentIndex]);
+            // 追蹤分類點擊
+            gtag('event', 'filter_category', {
+                'category_name': label
+            });
         }
 
         function drawRandomCard() {
@@ -423,6 +432,8 @@
                 renderCard(currentCards[currentIndex]);
                 const newCard = document.getElementById('active-card');
                 if (newCard) newCard.style.opacity = '1';
+                // 追蹤抽卡事件
+                gtag('event', 'draw_card');
             }, 300);
         }
 
@@ -431,12 +442,16 @@
             const text = `過年長輩問我：「${card.question.replace('<br>', ' ')}」\n\n我用愛盟情緒力神回覆：${card.answer}\n\n這招「稱讚＋問候」超推薦：\n${card.friendly}\n\n#愛盟2026過年生存戰 #情緒力學習 #愛的連結學`;
             copyToClipboard(text);
             showToast("內容已複製！去 Threads 破圈吧！");
+            // 追蹤分享事件
+            gtag('event', 'share_threads');
         }
 
         function copyPageLink() {
             const url = window.location.href;
             copyToClipboard(url);
             showToast("網址已複製！快傳給親友吧！");
+            // 追蹤複製連結事件
+            gtag('event', 'copy_link');
         }
 
         function copyToClipboard(text) {
@@ -456,13 +471,17 @@
             setTimeout(() => { toast.style.opacity = '0'; }, 3000);
         }
 
-        function handleInfoClick(element) {
+        function handleInfoClick(element, label) {
             const icon = element.querySelector('.info-icon');
             if (icon) {
                 icon.classList.remove('shake-effect');
                 void icon.offsetWidth; 
                 icon.classList.add('shake-effect');
             }
+            // 追蹤底部資訊連結點擊
+            gtag('event', 'info_link_click', {
+                'link_label': label
+            });
         }
 
         function createDust() {
